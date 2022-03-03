@@ -13,6 +13,7 @@ function App() {
     return (
         <BrowserRouter>
             <div className='app-wrapper'>
+                <h1>hello world</h1>
                 <Header/>
                 <Navbar/>
                 <div className='app-wrapper-content'>
