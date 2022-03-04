@@ -11,10 +11,11 @@
     color: lightseagreen;
 }
 
+.dialog a {
+    text-decoration: none;
+}
+
 .messages {
- padding: 10px;
+    padding: 10px;
 }
 
-.message {
-
-}
