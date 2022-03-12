@@ -8,16 +8,30 @@ import {BrowserRouter, Route} from 'react-router-dom';
 import News from './components/News/News';
 import Music from './components/Music/Music';
 import Settings from './components/Settings/Settings';
+import {ActionType, StateType} from './Redux/state';
 
-function App(props: any) {
+type AppPropsType = {
+    state: StateType
+    dispatch: <A extends ActionType>(action: A) => void
+}
+
+
+function App(props: AppPropsType) {
     return (
         <BrowserRouter>
             <div className='app-wrapper'>
                 <Header/>
                 <Navbar/>
                 <div className='app-wrapper-content'>
-                    <Route exact path='/dialogs' render={() => <Dialogs dialogsData={props.dialogsData} messagesData={props.messagesData}/>}/>
-                    <Route exact path='/profile' render={() => <Profile postData={props.postData}/>}/>
+                    <Route exact path='/dialogs' render={() => <Dialogs
+                        dialogsPage={props.state.dialogsPage}
+                        dispatch={props.dispatch}
+                        />}/>
+                    <Route exact path='/profile' render={() => <Profile
+                        profilePage={props.state.profilePage}
+                        dispatch={props.dispatch}
+                        />}
+                        />
                     <Route exact path='/news' component={News}/>
                     <Route exact path='/music' component={Music}/>
                     <Route exact path='/settings' component={Settings}/>
@@ -26,6 +40,7 @@ function App(props: any) {
         </BrowserRouter>
     );
 }
+
 
 
 
