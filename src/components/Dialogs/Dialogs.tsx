@@ -1,14 +1,16 @@
-import React, {KeyboardEventHandler} from 'react';
+import React from 'react';
 import s from './Dialogs.module.css'
 import {DialogsItemPropsType} from './DialogItem/DialogsItem';
 import {MessagePropsType} from './Message/MessageItem';
 import DialogItem from './DialogItem/DialogsItem';
 import MessageItem from './Message/MessageItem';
-import {ActionType, DialogsPageType, sendMessageActionCreator, updateNewMessageActionCreator} from '../../Redux/state';
+import {DialogsPageType} from '../../Redux/dialogsReducer';
+import AddMessageForm from './AddMessageForm/AddMessageForm';
 
-type DialogsPropsType = {
+export type DialogsPropsType = {
+    sendMessage: (newMessageBody: string) => void
     dialogsPage: DialogsPageType
-    dispatch: <A extends ActionType>(action: A) => void
+    isAuth: boolean
 }
 
 export type DialogPropsType = Array<DialogsItemPropsType>;
@@ -16,28 +18,19 @@ export type DialogPropsType = Array<DialogsItemPropsType>;
 export type MessagesPropsType = Array<MessagePropsType>;
 
 const Dialogs = (props: DialogsPropsType) => {
-    let messagesElements = props.dialogsPage.messagesData.map((item) => {
+    let state = props.dialogsPage;
+    let messagesElements = state.messagesData.map((item) => {
         return <MessageItem id={item.id} message={item.message}/>
     });
 
-    let dialogElements = props.dialogsPage.dialogsData.map((item) => {
+    let dialogElements = state.dialogsData.map((item) => {
         return <DialogItem name={item.name} id={item.id}/>
     });
 
-
-    let newMessageElement = React.createRef<HTMLTextAreaElement>();
-    let sendMessage = () => {
-        if (newMessageElement.current) {
-            props.dispatch(sendMessageActionCreator());
-        }
+    const addNewMessage = (values: any) => {
+        props.sendMessage(values.newMessageBody)
     }
-
-    let onMessageChange = () => {
-        if (newMessageElement.current) {
-            props.dispatch(updateNewMessageActionCreator(newMessageElement.current.value));
-        }
-    }
-
+    // if(!props.isAuth) return <Redirect to={'/login'}/>
     return (
         <div className={s.dialogs}>
             <div className={s.dialogsItems}>
@@ -45,20 +38,13 @@ const Dialogs = (props: DialogsPropsType) => {
             </div>
             <div className={s.messages}>
                 {messagesElements}
-                <div>
-                    <textarea onChange={onMessageChange}
-                              ref={newMessageElement}
-                              value={props.dialogsPage.newMessageText}>
-                    </textarea>
-                </div>
-                <div>
-                    <button onClick={sendMessage}
-                    >SendMessage
-                    </button>
-                </div>
             </div>
+            <AddMessageForm onSubmit={addNewMessage}/>
         </div>
     )
 }
 
 export default Dialogs;
+
+
+

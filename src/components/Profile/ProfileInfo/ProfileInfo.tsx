@@ -1,11 +1,28 @@
 import React from 'react';
 import s from './ProfileInfo.module.css'
+import Preloader from '../../common/preloader/preloader';
+import {ProfilePropsType} from '../Profile';
+import manWithoutAvatar from '../../../assets/images/manWithoutFoto.jpg';
+import ProfileStatus from './ProfileStatus';
+import ProfileStatusWithHooks from './ProfileStatusWithHooks';
 
-export const ProfileInfo = (props: any) => {
+type ProfileInfoPropsType = {
+    profile: ProfilePropsType
+    status: string
+    updateStatus: (status: string) => void
+}
+
+export const ProfileInfo = (props: ProfileInfoPropsType) => {
+    if(!props.profile) {
+        return <Preloader/>
+    }
+
     return <div>
-        <img src='https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg'/>
         <div className={s.descriptionBlock}>
-            ava + description
+            <img src={props.profile.photos.large ? props.profile.photos.large : manWithoutAvatar} width='200' height='200'/>
         </div>
+        <ProfileStatusWithHooks status={props.status} updateStatus={props.updateStatus}/>
+        <div>{props.profile.aboutMe}</div>
     </div>
 }
+

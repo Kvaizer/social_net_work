@@ -1,48 +1,46 @@
-import React from 'react';
+import React, {Suspense, useEffect} from 'react';
 import './App.css';
-import Header from "./components/Header/Header";
 import Navbar from "./components/Navbar/Navbar";
-import Profile from "./components/Profile/Profile";
-import Dialogs from './components/Dialogs/Dialogs';
-import {BrowserRouter, Route} from 'react-router-dom';
-import News from './components/News/News';
-import Music from './components/Music/Music';
-import Settings from './components/Settings/Settings';
-import {ActionType, StateType} from './Redux/state';
+import {Route} from 'react-router-dom';
+import UsersContainer from './components/Users/UsersContainer';
+import HeaderContainer from './components/Header/HeaderContainer';
+import LoginPage from './components/Login/Login';
+import {useAppDispatch, useAppSelector} from './hooks';
+import {initializeApp} from './Redux/appReducer';
+import Preloader from './components/common/preloader/preloader';
 
-type AppPropsType = {
-    state: StateType
-    dispatch: <A extends ActionType>(action: A) => void
-}
+const DialogsContainer = React.lazy(() => import('./components/Dialogs/DialogsContainer'))
+const ProfileContainer = React.lazy(() => import('./components/Profile/ProfileContainer'))
 
+function App() {
 
-function App(props: AppPropsType) {
+    const dispatch = useAppDispatch()
+    const initialized = useAppSelector((state) => state.app.initialized)
+
+    useEffect(() => {
+        dispatch(initializeApp())
+    }, [])
+
     return (
-        <BrowserRouter>
-            <div className='app-wrapper'>
-                <Header/>
+            initialized ? <div className='app-wrapper'>
+                <HeaderContainer/>
                 <Navbar/>
                 <div className='app-wrapper-content'>
-                    <Route exact path='/dialogs' render={() => <Dialogs
-                        dialogsPage={props.state.dialogsPage}
-                        dispatch={props.dispatch}
-                        />}/>
-                    <Route exact path='/profile' render={() => <Profile
-                        profilePage={props.state.profilePage}
-                        dispatch={props.dispatch}
-                        />}
-                        />
-                    <Route exact path='/news' component={News}/>
-                    <Route exact path='/music' component={Music}/>
-                    <Route exact path='/settings' component={Settings}/>
+                    <Route exact path='/dialogs' render={() => <Suspense fallback={<div>Loading...</div>}><DialogsContainer/></Suspense>}
+                    />
+                    <Route exact path='/profile/:userId?' render={() => <Suspense fallback={<div>Loading...</div>}><ProfileContainer/></Suspense>}
+                    />
+                    <Route path='/users'
+                           render={() => <UsersContainer/>}
+                    />
+                    <Route path='/login'
+                           render={() => <LoginPage/>}
+                    />
                 </div>
-            </div>
-        </BrowserRouter>
+            </div> : <Preloader/>
+
     );
 }
-
-
-
 
 export default App
 
